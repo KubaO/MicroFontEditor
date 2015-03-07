@@ -11,7 +11,9 @@ class MicroFontCharWidget : public QWidget
 		explicit MicroFontCharWidget(QWidget *parent = 0);
 		~MicroFontCharWidget();
 		QString generateCode();
+		QString generateCode(QString data);
 		void setChar(QString data);
+		QString getChar();
 		QString pinLayout();
 		void setPinLayout(QString layout);
 		void autoPinLayout();

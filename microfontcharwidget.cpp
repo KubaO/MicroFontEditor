@@ -129,19 +129,23 @@ void MicroFontCharWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 QString MicroFontCharWidget::generateCode() {
+	return generateCode(getChar());
+}
+
+QString MicroFontCharWidget::generateCode(QString data) {
 	QString code = "";
-	int result = 0, base = 0;
-	for (int i = 0; i < polygons.size(); i++) {
-		if (polygonState[i] && (polygonPin[i] > -1)) {
-			result |= 1 << (polygonPin[i] - base);
+	int byte = 0, offset = 0;
+	for (int i = 0; i < qMin(data.size(), polygons.size()); i++) {
+		if ((data[i] != '0') && (polygonPin[i] > -1)) {
+			byte |= 1 << (polygonPin[i] - offset);
 		}
-		if (((i - base) == 7) || (i == (polygons.size() - 1))) {
+		if (((i - offset) == 7) || (i == (data.size() - 1))) {
 			if (code.size() != 0) {
 				code += ", ";
 			}
-			code += "0x" + QString::number(result, 16);
-			base = i + 1;
-			result = 0;
+			code += "0x" + QString::number(byte, 16);
+			offset = i + 1;
+			byte = 0;
 		}
 
 	}
@@ -149,28 +153,33 @@ QString MicroFontCharWidget::generateCode() {
 }
 
 void MicroFontCharWidget::setChar(QString data) {
-	QStringList l = data.split(", ");
-	for (int i = 0; i < polygons.size(); i++) {
-		polygonState[i] = false;
-	}
-	int base = 0;
-	for (int i = 0; i < l.size(); i++) {
-		QString part = l[i];
-		part.remove(0, 2);
-		int k = part.toInt(0, 16);
-		for (int j = 0; j < 8; j++) {
-			if (k & (1 << j)) {
-				int m = j + base;
-				int p = polygonPin.indexOf(m);
-				if (p > -1) {
-					polygonState[p] = true;
-				}
+	if (data.size() > 0) {
+		for (int i = 0; i < qMin(data.size(), polygons.size()); i++) {
+			if (data[i] == '0') {
+				polygonState[i] = false;
+			} else {
+				polygonState[i] = true;
 			}
 		}
-		base += 8;
+	} else {
+		for (int i = 0; i < polygons.size(); i++) {
+			polygonState[i] = false;
+		}
 	}
 	update();
 	emit charChanged();
+}
+
+QString MicroFontCharWidget::getChar() {
+	QString tmp = "";
+	for (int i = 0; i < polygons.size(); i++) {
+		if (polygonState[i]) {
+			tmp += "1";
+		} else {
+			tmp += "0";
+		}
+	}
+	return tmp;
 }
 
 QString MicroFontCharWidget::pinLayout() {

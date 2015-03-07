@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	chars.push_back("0x0");
+	chars.push_back("");
 }
 
 MainWindow::~MainWindow()
@@ -20,13 +20,13 @@ MainWindow::~MainWindow()
 void MainWindow::on_fontViewer_charChanged() {
 	QString code = ui->fontViewer->generateCode();
 	ui->codeLineEdit->setText(code);
-	chars[ui->charSpinBox->value()] = code;
+	chars[ui->charSpinBox->value()] = ui->fontViewer->getChar();
 	QString tmp = "";
 	for (int i = 0; i < chars.size(); i++) {
 		if (i != 0) {
 			tmp += ",\n";
 		}
-		tmp += chars[i];
+		tmp += ui->fontViewer->generateCode(chars[i]);
 	}
 	ui->fullCodeTextEdit->setPlainText(tmp);
 }
@@ -38,7 +38,7 @@ void MainWindow::on_charSpinBox_valueChanged(int value)
 
 void MainWindow::on_addButton_clicked()
 {
-	chars.insert(chars.begin() + ui->charSpinBox->value() + 1, "0x0");
+	chars.insert(chars.begin() + ui->charSpinBox->value() + 1, "");
 	ui->charSpinBox->setRange(0, chars.size() - 1);
 	ui->charSpinBox->stepUp();
 	ui->removeButton->setEnabled(true);
@@ -58,13 +58,15 @@ void MainWindow::on_removeButton_clicked()
 void MainWindow::on_actionSave_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, "MicroFontEditor", QString(),
-							"MicroFont (*.mf)|*.mf|All files (*.*)|*.*", 0, 0);
+							"MicroFont (*.mf);;All files (*.*)", 0, 0);
 	if (fileName.size() > 0) {
 		QFile file(fileName);
 		if (file.open(QIODevice::WriteOnly)) {
 			file.write(QString(ui->fontViewer->polygonData() + "\n").toUtf8());
 			file.write(QString(ui->fontViewer->pinLayout() + "\n").toUtf8());
-			file.write(QString(ui->fullCodeTextEdit->toPlainText() + "\n").toUtf8());
+			for (int i = 0; i < chars.size(); i++) {
+				file.write(QString(chars[i] + "\n").toUtf8());
+			}
 			file.close();
 		} else {
 			QMessageBox::warning(this, "MicroFontEditor", "Failed to create file", QMessageBox::Ok, QMessageBox::Ok);
@@ -86,7 +88,8 @@ void MainWindow::on_actionOpen_triggered()
 			file.close();
 			ui->fontViewer->setPolygonData(polygonData);
 			ui->fontViewer->setPinLayout(pinLayout);
-			chars = code.split(",\n");
+			chars = code.split("\n");
+			chars.removeLast();
 			ui->charSpinBox->setRange(0, chars.size() - 1);
 			ui->charSpinBox->setValue(0);
 			on_charSpinBox_valueChanged(0);
@@ -114,7 +117,7 @@ void MainWindow::on_actionClear_pin_layout_triggered()
 void MainWindow::on_actionSeven_segment_triggered()
 {
 	chars.clear();
-	chars.append("0x0");
+	chars.append("");
 	ui->fontViewer->setSevenSegment();
 	ui->charSpinBox->setValue(0);
 	ui->charSpinBox->setRange(0, 0);
@@ -130,7 +133,7 @@ void MainWindow::on_actionLed_matrix_triggered()
 	int height = QInputDialog::getInt(this, "MicroFontEditor", "Enter matrix height:", 8, 1, 16, 1, &ok);
 	if (!ok) return;
 	chars.clear();
-	chars.append("0x0");
+	chars.append("");
 	ui->fontViewer->setLedMatrix(width, height);
 	ui->charSpinBox->setValue(0);
 	ui->charSpinBox->setRange(0, 0);
