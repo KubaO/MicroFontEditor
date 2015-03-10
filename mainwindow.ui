@@ -144,22 +144,22 @@
   </action>
   <action name="actionAutomatic_pin_layout">
    <property name="text">
-    <string>&amp;Automatic pin layout</string>
+    <string>&amp;Automatic Pin Layout</string>
    </property>
   </action>
   <action name="actionClear_pin_layout">
    <property name="text">
-    <string>&amp;Clear pin layout</string>
+    <string>&amp;Clear Pin Layout</string>
    </property>
   </action>
   <action name="actionSeven_segment">
    <property name="text">
-    <string>&amp;Seven-segment</string>
+    <string>&amp;Seven-Segment Display</string>
    </property>
   </action>
   <action name="actionLed_matrix">
    <property name="text">
-    <string>&amp;Led matrix</string>
+    <string>&amp;LED Matrix</string>
    </property>
   </action>
  </widget>
