@@ -1,11 +1,16 @@
 # MicroFontEditor
-Font editor for seven-segment display or led matrix
 
-You can create, save and modify fonts for seven-segment display or led matrix.
-You can assign each segment to bit and get HEX-codes which can be pasted to
-your code.
+Font editor to create, save, and modify fonts for seven-segment displays and 
+LED matrices.
 
-Left button click toggles segment state. Right button click changes pin assign.
-You can use auto-assign or clear bit assign via menu "Font".
+You can assign each segment to a bit and get HEX codes which then can be 
+pasted to your source code.
 
-Screenshot: http://itmages.ru/image/view/2338616/ac11ce7d
+A quick howto:
+
+* Left-click toggles segment state.
+* Right-click changes pin assignment.
+
+You can use auto-assign or clear the bit assignation via the Font menu.
+
+![MicroFontEditor screenshot](http://storage2.static.itmages.ru/i/15/0307/h_1425748740_3442889_ac11ce7d99.png "MicroFontEditor screenshot")
