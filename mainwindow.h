@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
 	public:
 		explicit MainWindow(QWidget *parent = 0);
 		~MainWindow();
+		bool checkDirty();
 
 	private slots:
 		void on_fontViewer_charChanged();
@@ -39,6 +40,7 @@ class MainWindow : public QMainWindow
 	private:
 		Ui::MainWindow *ui;
 		QStringList chars;
+		bool dirty;
 };
 
 #endif // MAINWINDOW_H

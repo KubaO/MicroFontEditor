@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	chars.push_back("");
+	dirty = false;
 }
 
 MainWindow::~MainWindow()
@@ -29,6 +30,7 @@ void MainWindow::on_fontViewer_charChanged() {
 		tmp += ui->fontViewer->generateCode(chars[i]);
 	}
 	ui->fullCodeTextEdit->setPlainText(tmp);
+	dirty = true;
 }
 
 void MainWindow::on_charSpinBox_valueChanged(int value)
@@ -43,6 +45,7 @@ void MainWindow::on_addButton_clicked()
 	ui->charSpinBox->stepUp();
 	ui->removeButton->setEnabled(true);
 	on_charSpinBox_valueChanged(ui->charSpinBox->value());
+	dirty = true;
 }
 
 void MainWindow::on_removeButton_clicked()
@@ -53,7 +56,21 @@ void MainWindow::on_removeButton_clicked()
 	if (chars.size() == 1) {
 		ui->removeButton->setEnabled(false);
 	}
+	dirty = true;
 }
+
+bool MainWindow::checkDirty() {
+	if (dirty) {
+		int r = QMessageBox::question(this, "MicroFontEditor", "Font modified. Save?", QMessageBox::Yes, QMessageBox::No);
+		if (r == QMessageBox::Yes) {
+			on_actionSave_triggered();
+		} else {
+			dirty = false;
+		}
+	}
+	return !dirty;
+}
+
 
 void MainWindow::on_actionSave_triggered()
 {
@@ -68,6 +85,7 @@ void MainWindow::on_actionSave_triggered()
 				file.write(QString(chars[i] + "\n").toUtf8());
 			}
 			file.close();
+			dirty = false;
 		} else {
 			QMessageBox::warning(this, "MicroFontEditor", "Failed to create file", QMessageBox::Ok, QMessageBox::Ok);
 		}
@@ -77,6 +95,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
+	if (!checkDirty()) return;
 	QString fileName = QFileDialog::getOpenFileName(this, "MicroFontEditor", QString(),
 							"MicroFont (*.mf);;All files (*.*)", 0, 0);
 	if (fileName.size() > 0) {
@@ -116,6 +135,7 @@ void MainWindow::on_actionClear_pin_layout_triggered()
 
 void MainWindow::on_actionSeven_segment_triggered()
 {
+	if (!checkDirty()) return;
 	chars.clear();
 	chars.append("");
 	ui->fontViewer->setSevenSegment();
@@ -127,6 +147,7 @@ void MainWindow::on_actionSeven_segment_triggered()
 
 void MainWindow::on_actionLed_matrix_triggered()
 {
+	if (!checkDirty()) return;
 	bool ok;
 	int width = QInputDialog::getInt(this, "MicroFontEditor", "Enter matrix width:", 8, 1, 16, 1, &ok);
 	if (!ok) return;
