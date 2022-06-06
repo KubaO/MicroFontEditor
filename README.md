@@ -1,5 +1,7 @@
 # MicroFontEditor
 
+This project is an archive copy of github.com/KivApple/MicroFontEditor
+
 Font editor to create, save, and modify fonts for seven-segment displays and 
 LED matrices.
 
